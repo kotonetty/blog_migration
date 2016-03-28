@@ -12,30 +12,60 @@ require 'time'
 	title = blog.xpath("title").text
 	primary_category = blog.xpath("category").text
 	date = blog.xpath("date").text
-	changeDate = DateTime.parse(date)
-	dateTime = changeDate.strftime(date_format)
-	body = blog.xpath("description").text 
-	comment = blog.xpath("comment")
-	comment_author = comment.xpath("name")
-	comment_body = comment.xpath("description")
-	comment_date = comment.xpath("date")
+	change_date = DateTime.parse(date)
+	date_time = change_date.strftime(date_format)
+	body = blog.xpath("description").text
+	if blog.xpath("comment") then
+		comments = blog.xpath("comments")
+		comment_list = []
+			comments.each do |comment_ele|
+			comment = {} 
+			comment["author"] = comment_ele.xpath("name").text
+			comment["email"] = comment_ele.xpath("email").text
+			comment["url"] = comment_ele.xpath("url").text
+			comment["body"] = comment_ele.xpath("description").text
+			comment_date = comment_ele.xpath("date").text
+			if !comment_date.empty? then
+				comment_change_date = DateTime.parse(comment_date)
+				comment["date"] = comment_change_date.strftime(date_format)
+			end
+			comment_list.push(comment)
+		end
+	end
+	
+#	if blog.xpath("trackback") then
+#		trackbacks = blog.xpath("trackbacks")
 
+#		trackbacks.each do |trackback|
+#			trackback_title = trackback.xpath("title")
+#			trackback_url = trackback.xpath("url")
+#			trackback_date = trackback.xpath("date")
+#			trackback_change_date = DateTime.parse(trackback_date)
+#			trackback_date_time = track_change_date.strftime(date_format)
+#		end
+#	end 
 
-	puts "AUTHOR:" + author 
-	puts "TITLE:" + title
-	puts "STATUS:Publish"
-	puts "ALLOW_COMMENTS: 1"  
-	puts "ALLOW_PINGS: 1"
-	puts "CONVERT BREAKS: 1"
-	puts "PRIMARY CATEGORY:" + primary_category
-	puts "DATE:" + dateTime
-	puts "-----\nBODY:\n" + body + "\n-----"
+#	puts "AUTHOR:" + author 
+#	puts "TITLE:" + title
+#	puts "STATUS:Publish"
+#	puts "ALLOW_COMMENTS: 1"  
+#	puts "ALLOW_PINGS: 1"
+#	puts "CONVERT BREAKS: 1"
+#	puts "PRIMARY CATEGORY:" + primary_category
+#	puts "DATE:" + date_time
+#	puts "-----\nBODY:\n" + body + "\n-----"
 #	puts "EXTENDED BODY:" + "\n-----"
 #	puts "KEYWORDS:" + "\n-----"
-#	puts "COMMENT:"
-#	puts "AUTHOR:" + comment_author
-#	puts "DATE:" + comment_date
-#	puts comment_body + "\n-----"
+	if comments then
+#		comment_list.each do |comment|
+#		puts comment 
+#		puts "COMMENT:"
+#		puts "AUTHOR:" + comment["author"]
+#		puts "DATE:" + comment["date"]
+#		puts "EMAIL:" + comment["email"]
+#		puts comment["body"] + "\n-----"
+#		end
+	end
 #	puts "PING:"
 #	puts "TITLE:"
 #	puts "URL:"
