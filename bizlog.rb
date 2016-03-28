@@ -27,7 +27,7 @@ require 'time'
 			comment_date = comment_ele.xpath("date").text
 			if !comment_date.empty? then
 				comment_change_date = DateTime.parse(comment_date)
-				comment["date"] = comment_change_date.strftime(date_format)
+				comment["date"] = comment_change_date.strftime(date_format).to_s
 			end
 			comment_list.push(comment)
 		end
@@ -45,26 +45,25 @@ require 'time'
 #		end
 #	end 
 
-#	puts "AUTHOR:" + author 
-#	puts "TITLE:" + title
-#	puts "STATUS:Publish"
-#	puts "ALLOW_COMMENTS: 1"  
-#	puts "ALLOW_PINGS: 1"
-#	puts "CONVERT BREAKS: 1"
-#	puts "PRIMARY CATEGORY:" + primary_category
-#	puts "DATE:" + date_time
-#	puts "-----\nBODY:\n" + body + "\n-----"
-#	puts "EXTENDED BODY:" + "\n-----"
-#	puts "KEYWORDS:" + "\n-----"
-	if comments then
-#		comment_list.each do |comment|
-#		puts comment 
-#		puts "COMMENT:"
-#		puts "AUTHOR:" + comment["author"]
-#		puts "DATE:" + comment["date"]
-#		puts "EMAIL:" + comment["email"]
-#		puts comment["body"] + "\n-----"
-#		end
+	puts "AUTHOR:" + author 
+	puts "TITLE:" + title
+	puts "STATUS:Publish"
+	puts "ALLOW_COMMENTS: 1"  
+	puts "ALLOW_PINGS: 1"
+	puts "CONVERT BREAKS: 1"
+	puts "PRIMARY CATEGORY:" + primary_category
+	puts "DATE:" + date_time
+	puts "-----\nBODY:\n" + body + "\n-----"
+	puts "EXTENDED BODY:" + "\n-----"
+	puts "KEYWORDS:" + "\n-----"
+	if !comment_list.empty? then
+		comment_list.each do |comment|
+		puts "COMMENT:"
+		puts "AUTHOR:" + comment["author"]
+		puts "DATE:" + comment["date"].to_s
+		puts "EMAIL:" + comment["email"]
+		puts comment["body"] + "\n-----"
+		end
 	end
 #	puts "PING:"
 #	puts "TITLE:"
