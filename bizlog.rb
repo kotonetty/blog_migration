@@ -18,7 +18,7 @@ blogs.each do |blog|
 	body = blog.xpath("description").text
 	comment_list = []
 	if blog.xpath("comments").text != "" then #コメントがある場合
-		comments = blog.xpath("//comments/comment")
+		comments = blog.xpath("comments//comment")
 		comments.each do |comment_ele|
 			comment = {} 
 			comment["author"] = comment_ele.xpath("name").text
@@ -33,7 +33,7 @@ blogs.each do |blog|
 	end
 	trackback_list = []
 	if blog.xpath("trackbacks").text != "" then #トラックバックがある場合
-		trackbacks = blog.xpath("//trackbacks/trackback")
+		trackbacks = blog.xpath("trackbacks//trackback")
 		trackbacks.each do |trackback_ele|
 			trackback = {}
 			trackback["title"] = trackback_ele.xpath("title").text
