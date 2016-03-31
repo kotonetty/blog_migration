@@ -2,7 +2,7 @@ require 'nokogiri'
 require 'date'
 require 'time'
 
-	file = File.open("bizlog.xml")
+	file = File.open("0331.xml")
 	blog_doc = Nokogiri::XML(file)
 	date_format = '%m/%d/%Y %H:%M:%S'
 	blogs = blog_doc.xpath("//entry")
@@ -11,26 +11,24 @@ require 'time'
 	author = blog.xpath("author").text
 	title = blog.xpath("title").text
 	primary_category = blog.xpath("category").text
-	date = blog.xpath("date").text
+	date = blog.xpath("date").to_s
 	change_date = DateTime.parse(date)
 	date_time = change_date.strftime(date_format)
 	body = blog.xpath("description").text
-	if blog.xpath("comment") then
-		comments = blog.xpath("comments")
-		comment_list = []
+	comment_list = []
+	if blog.xpath("comments").text != "" then
+		comments = blog.xpath("comments/comment")
 			comments.each do |comment_ele|
 			comment = {} 
 			comment["author"] = comment_ele.xpath("name").text
 			comment["email"] = comment_ele.xpath("email").text
 			comment["url"] = comment_ele.xpath("url").text
 			comment["body"] = comment_ele.xpath("description").text
-			comment_date = comment_ele.xpath("date").text
-			if !comment_date.empty? then
-				comment_change_date = DateTime.parse(comment_date)
-				comment["date"] = comment_change_date.strftime(date_format).to_s
-			end
+			comment_date = comment_ele.xpath("date").to_s
+			comment_change_date = DateTime.parse(comment_date)
+			comment["date"] = comment_change_date.strftime(date_format).to_s
 			comment_list.push(comment)
-		end
+			end
 	end
 	
 #	if blog.xpath("trackback") then
