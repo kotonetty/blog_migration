@@ -4,10 +4,8 @@ require 'date'
 require 'time'
 require 'open-uri'
 require 'aws-sdk-core'
-
 Aws.config[:region] = 'ap-northeast-1'
 s3 = Aws::S3::Client.new
-
 #XMLからMovable Typeに変換するプログラム
 file = File.open("bizlog.xml")
 blog_doc = Nokogiri::XML(file)
@@ -26,40 +24,47 @@ blogs.each do |blog|
 		body_images = body.scan(/<img src=\".*\".*\/>/)
 		body_images.each do |body_image|
 			image_path = ""
-			if body_image.match(/\"images\/.*g\"\s/) != nil
-				change_image = body_image.match(/\"images\/.*g\"\s/)
-				image_path = change_image[0].gsub(/images/,'http://blog.amelieff.jp/images')
+			if body_image.match(/\"images\/.*g.*\"\s/) != nil
+				if body_image.match(/\"images\/.*[g,P,p,j][N,i,n,p][G,f,g].*[0-9]00px.*g\"/) != nil then
+					images = body_image.match(/\"images\/.*[p,j,P,g][i,N,n,p][f,g,G].*[0-9]00px.*g\"/)
+					change_images = images[0].gsub(/.[0-9]00px.*/,'"')
+					image_path = change_images.gsub(/images/,'http://blog.amelieff.jp/images')
+				else
+					images = body_image.match(/\"images\/.*[p,j,P,g][i,n,p,N][g,G,f]\"/)
+					image_path = images[0].gsub(/images/,'http://blog.amelieff.jp/images')
+				end
 				body_after = body.gsub(/images/,'http://blog.image.s3.amazonaws.com')
-			elsif body_image.match(/\"amelieff.*g\"/)
+			elsif body_image.match(/\"amelieff.*[p,j][n,p]g*\"\s/) != nil
 				change_image = body_image.match(/\"amelieff.*g\"/)
-				image_path = change_image[0]
+				if  body_image.match(/\"amelieff.*[P,g,p,j][i,G,n,p][g,G,f].*[0-9]00px.*\"/) != nil then
+					images = body_image.match(/\"amelieff.*[P,g,p,j][G,i,n,p][g,G,f].*[0-9]00px.*\"/)
+					pre_change_images = images[0].qsub(/.[0-9]00px.*/,'')
+					image_path = pre_change_images
+				else
+					images = body_image.match(/\"amelieff.*[P,p,j,g][i,N,n,p][g,G,f]\"/)
+					image_path = images
+				end
 				body_after = body.gsub(/amelieff\.jp\/wp\/wp-content\/uploads/,'blog.image.s3.amazonaws.com')
 			end
+
+		  if image_path != "" then
+		 	image_path = image_path.gsub!("\"","")
+		  end
 			if image_path != "" then
-				dir_name = "/home/kikuchik/bizlog/images/"
-#				file_open = File.open(image_path)
+				dir_name = "/Users/kikuchikotone/Documents/blog_converter/images/"
 				file_name = File.basename(image_path)
 				file_path = dir_name + file_name
-				open(file_path, 'rb') do |output|
-					open(image_path) do |data|
-						output.write(data.read)
-					end
-				end
-#				s3.puts_object(
-#					bucket: "blog.image",
-#					body: file_open,
-#					key: file_name
-#				)
+				puts file_name
+				FileUtils.mkdir_p(dir_name) unless FileTest.exist?(dir_name)
+				file_open = File.open("images/#{file_name}")
+				f_name = File.basename(file_name)
+				s3.put_object(
+				bucket: "blog.image",
+				body: file_open,
+				key: f_name
+				)
 			end
 		end
-#		end
-#		file_open = File.open(blog_images_change)
-#		file_name= File.basename(blog_images_change)
-#		s3.put_object(
-#			bucket: "blog.image",
-#			body: file_open,
-#			key: file_name
-#		)	
 	end
 	
 	comment_list = []
